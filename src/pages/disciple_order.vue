@@ -1,11 +1,11 @@
 <template>
 	<div class="container">
-		<div class="order_item">
+		<div class="order_item" v-for="item in task_list">
 			<div class="item_left">
-				<div class="goods_name">商品名称</div>
-				<div class="goods_code">商品编号</div>
+				<div class="goods_name">{{item.shop_name}}</div>
+				<div class="goods_code">{{item.goods_id}}</div>
 			</div>
-			<div class="goods_money">商品金额(元)：6</div>
+			<div class="goods_money">付款金额(元)：{{item.pay_money}}</div>
 		</div>
 	</div>
 </template>
@@ -42,7 +42,27 @@
 }
 </style>
 <script>
+	import resource from '../api/resource.js'
 	export default{
-
+		data(){
+			return{
+				task_list:[]
+			}
+		},
+		created(){
+			let query = this.$route.query;
+			let req = {
+				prentice_ww:query.prentice_ww,
+				query_date:query.query_date
+			}
+			resource.getPrenticeTask(req).then(res => {
+				if(res.data.code == 1){
+					this.task_list = res.data.data;
+				}else{
+					this.$toast(res.data.msg);
+					this.$router.go(-1);
+				}
+			})
+		}
 	}
 </script>

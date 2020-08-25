@@ -143,15 +143,11 @@
 	export default{
 		data(){
 			return{
-				startDate:new Date(),
-				endData:new Date(Date.parse(new Date) + 1000 * 60 * 60 * 24 * 7),
+				startDate:new Date(Date.parse(new Date) - 1000 * 60 * 60 * 24 * 6),
+				endData:new Date(),
 				date_time:"选择日期",
 				wang_code:""
 			}
-		},
-		created(){
-			console.log(new Date())
-			console.log(new Date(Date.parse(new Date) + 1000 * 60 * 60 * 24 * 7))
 		},
 		methods:{
 			//打开日期选择器
@@ -170,7 +166,7 @@
 				}else if(this.wang_code == ''){
 					Toast('请选择输入徒弟旺旺号');
 				}else{
-					
+					this.$router.push('/disciple_order?prentice_ww=' + this.wang_code + '&query_date=' + this.date_time)
 				}
 			},
 		},

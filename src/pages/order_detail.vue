@@ -5,12 +5,7 @@
 				<div class="tag_img"></div>
 				<div class="title_text">任务要求</div>
 			</div>
-			<div class="content_box requirements">
-				店家要求是还是呢么十多号尽快尽快靠的就是大家店
-				都是动画的旧爱就送全家都IQ积分哦假发票等我大风
-				等我大青蛙多群地区的违法的房都忘得群多若群翁多
-				程序是否成都市
-			</div>
+			<div class="content_box requirements">{{task_info.remark}}</div>
 		</div>
 		<div class="cancel" @click="cancelOrder">取消任务</div>
 		<div class="content">
@@ -19,8 +14,8 @@
 				<div class="title_text">搜索关键字</div>
 			</div>
 			<div class="content_box keyword">
-				<div class="keyword_text">桌子</div>
-				<img class="goods_img" src="../assets/mangguo.png">
+				<div class="keyword_text">{{task_info.keyword}}</div>
+				<img class="goods_img" :src="task_info.goods_img">
 			</div>
 		</div>
 		<div class="content">
@@ -30,7 +25,7 @@
 			</div>
 			<div class="content_box submit">
 				<input class="input_box" type="text" placeholder="请输入店铺名称" v-model="store_name">
-				<div class="submit_but">提交</div>
+				<div class="submit_but" @click="checkTask">提交</div>
 			</div>
 		</div>
 	</div>
@@ -138,19 +133,64 @@
 </style>
 <script>
 	import { MessageBox } from 'mint-ui';
+	import resource from '../api/resource.js'
 	export default{
 		data(){
 			return{
+				task_id:"",
+				task_info:{},
 				store_name:""
 			}
 		},
+		created(){
+			this.task_id = this.$route.query.task_id;
+			//获取任务详情
+			this.getTaskDetail();
+		},
 		methods:{
+			//获取任务详情
+			getTaskDetail(){
+				resource.taskDetail({usertask_id:this.task_id}).then(res => {
+					if(res.data.code == 1){
+						this.task_info = res.data.data;
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
+			//取消任务
 			cancelOrder(){
 				MessageBox.confirm('确定执行此操作?').then(action => {
 					if(action == 'confirm'){
-						console.log("取消")
+						resource.abandonTask({usertask_id:this.task_id}).then(res => {
+							if(res.data.code == 1){
+								this.$toast(res.data.msg);
+								this.$router.go(-1);
+							}else{
+								this.$toast(res.data.msg);
+							}
+						})
 					}
 				});
+			},
+			//任务检查
+			checkTask(){
+				if(this.store_name == ''){
+					this.$toast("请输入店铺名称");
+				}else{
+					let req = {
+						usertask_id:this.task_id,
+						shop_name:this.store_name
+					}
+					resource.checkTask(req).then(res => {
+						if(res.data.code == 1){
+							this.$toast(res.data.msg);
+							this.$router.go(-1);
+						}else{
+							this.$toast(res.data.msg);
+						}
+					})
+				}
 			}
 		}
 	}

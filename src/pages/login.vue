@@ -3,8 +3,8 @@
 		<div class="login_title">密码登录</div>
 		<input class="input_element" type="type" placeholder="请输入旺旺号" v-model="wangwang">
 		<input class="input_element password" type="password" placeholder="请输入密码" v-model="password">
-		<div class="toast_text">未注册过的账号讲直接帮您注册</div>
-		<div class="login_but">登录</div>
+		<div class="toast_text">第一次登录为设置密码</div>
+		<div class="login_but" @click="login">登录</div>
 	</div>
 </template>
 <style lang="less" scoped>
@@ -63,12 +63,36 @@
 }
 </style>
 <script>
+	import resource from '../api/resource.js'
 	export default{
 		data(){
 			return{
 				wangwang:"",
 				password:"",
-
+			}
+		},
+		methods:{
+			// 登录
+			login(){
+				if(this.wangwang == ''){
+					this.$toast("请输入旺旺号");
+				}else if(this.password == ''){
+					this.$toast("请输入密码");
+				}else{
+					let req = {
+						ww:this.wangwang,
+						pwd:this.password
+					}
+					resource.login(req).then(res => {
+						if(res.data.code == 1){
+							this.$toast(res.data.msg);
+							this.$router.replace('/index');
+						}else{
+							this.$toast(res.data.msg);
+						}
+					})
+				}
+				
 			}
 		}
 	}

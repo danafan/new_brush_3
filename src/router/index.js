@@ -40,9 +40,9 @@ const router = new Router({
 	]
 })
 // 路由跳转前的钩子
-router.beforeEach( (to, from, next) => {
-	document.title = to.name
-	next()
-})
+// router.beforeEach( (to, from, next) => {
+// 	document.title = to.name
+// 	next()
+// })
 
 export default router;
