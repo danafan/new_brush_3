@@ -5,7 +5,7 @@
 				<div class="goods_name">{{item.shop_name}}</div>
 				<div class="goods_code">{{item.goods_id}}</div>
 			</div>
-			<div class="goods_money">付款金额(元)：{{item.pay_money}}</div>
+			<div class="goods_money">付款金额(元)：{{item.payment_amount}}</div>
 		</div>
 	</div>
 </template>

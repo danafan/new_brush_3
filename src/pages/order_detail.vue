@@ -21,11 +21,21 @@
 		<div class="content">
 			<div class="content_title">
 				<div class="tag_img"></div>
-				<div class="title_text">按任务要求操作后提交</div>
+				<div class="title_text">按任务要求操作后验证</div>
 			</div>
 			<div class="content_box submit">
 				<input class="input_box" type="text" placeholder="请输入店铺名称" v-model="store_name">
-				<div class="submit_but" @click="checkTask">提交</div>
+				<div class="submit_but" @click="checkTask">验证</div>
+			</div>
+		</div>
+		<div class="content" v-if="checkSuccess">
+			<div class="content_title">
+				<div class="tag_img"></div>
+				<div class="title_text">提交</div>
+			</div>
+			<div class="content_box submit">
+				<div class="goods_price">拍下价格为{{goods_price}}元的商品后提交</div>
+				<div class="submit_but" @click="submitTask">提交</div>
 			</div>
 		</div>
 	</div>
@@ -73,16 +83,28 @@
 				font-size: .32rem;
 				color:#00C693;
 				font-weight:500;
+				word-wrap:break-word;
+				-webkit-touch-callout:none;  
+				-webkit-user-select:none;  
+				-khtml-user-select:none;  
+				-moz-user-select:none;  
+				-ms-user-select:none;  
+				user-select:none;  
 			}
 			.goods_img{
 				border-radius:.08rem;
-				width: 1.8rem;
-				height: 1.8rem;
+				width: 4.6rem;
+				height: 4.6rem;
 			}
+		}
+		.goods_price{
+			font-size: .3rem;
+			color: #333333;
 		}
 		.submit{
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
 			.input_box{
 				border:1px solid #F1F1F1;
 				border-radius: .08rem;
@@ -139,7 +161,9 @@
 			return{
 				task_id:"",
 				task_info:{},
-				store_name:""
+				store_name:"",
+				goods_price:'',
+				checkSuccess:false
 			}
 		},
 		created(){
@@ -173,7 +197,7 @@
 					}
 				});
 			},
-			//任务检查
+			//验证
 			checkTask(){
 				if(this.store_name == ''){
 					this.$toast("请输入店铺名称");
@@ -185,12 +209,24 @@
 					resource.checkTask(req).then(res => {
 						if(res.data.code == 1){
 							this.$toast(res.data.msg);
-							this.$router.go(-1);
+							this.goods_price = res.data.data;
+							this.checkSuccess = true;
 						}else{
 							this.$toast(res.data.msg);
 						}
 					})
 				}
+			},
+			//提交
+			submitTask(){
+				resource.commitTask({usertask_id:this.task_id,}).then(res => {
+					if(res.data.code == 1){
+						this.$toast(res.data.msg);
+						this.$router.go(-1);
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
 			}
 		}
 	}
