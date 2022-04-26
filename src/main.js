@@ -4,10 +4,11 @@ import router from './router'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 import '@/utils/rem'
-import VueClipboards from 'vue-clipboards';
+import VueClipboard from 'vue-clipboard2'
+Vue.use(VueClipboard)
 
 Vue.use(MintUI)
-Vue.use(VueClipboards);
+Vue.prototype.judgmentPhone = /^1[3456789]\d{9}$/;		//手机号正则
 
 new Vue({
 	render: h => h(App),

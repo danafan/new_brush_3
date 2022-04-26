@@ -11,6 +11,12 @@
 		<div class="content">
 			<div class="content_title">
 				<div class="tag_img"></div>
+				<div class="title_text">拍下{{task_info.goods_num}}件商品</div>
+			</div>
+		</div>
+		<div class="content">
+			<div class="content_title">
+				<div class="tag_img"></div>
 				<div class="title_text">搜索关键字</div>
 			</div>
 			<div class="content_box keyword">
@@ -18,24 +24,38 @@
 				<img class="goods_img" :src="task_info.goods_img">
 			</div>
 		</div>
-		<div class="content">
+		<!-- 得物退款 -->
+		<div class="content" v-if="task_info.shop_type == '3'">
 			<div class="content_title">
 				<div class="tag_img"></div>
 				<div class="title_text">按任务要求操作后验证</div>
 			</div>
 			<div class="content_box submit">
-				<input class="input_box" type="text" placeholder="请输入店铺名称" v-model="store_name">
-				<div class="submit_but" @click="checkTask">验证</div>
+				<input class="input_box" type="text" placeholder="请输入订单编号" v-model="order_sn">
+				<div class="submit_but" @click="taskOrderCommit">提交</div>
 			</div>
 		</div>
-		<div class="content" v-if="checkSuccess">
-			<div class="content_title">
-				<div class="tag_img"></div>
-				<div class="title_text">提交</div>
+		<!-- 淘宝/拼多多/抖音 -->
+		<div v-else>
+			<div class="content">
+				<div class="content_title">
+					<div class="tag_img"></div>
+					<div class="title_text">按任务要求操作后验证</div>
+				</div>
+				<div class="content_box submit">
+					<input class="input_box" type="text" placeholder="请输入店铺名称" v-model="store_name">
+					<div class="submit_but" @click="checkTask">验证</div>
+				</div>
 			</div>
-			<div class="content_box submit">
-				<div class="goods_price">拍下价格为{{goods_price}}元的商品后提交</div>
-				<div class="submit_but" @click="submitTask">提交</div>
+			<div class="content" v-if="checkSuccess">
+				<div class="content_title">
+					<div class="tag_img"></div>
+					<div class="title_text">提交</div>
+				</div>
+				<div class="content_box submit">
+					<div class="goods_price">拍下价格为{{goods_price}}元的商品后提交</div>
+					<div class="submit_but" @click="submitTask">提交</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -163,6 +183,7 @@
 				task_info:{},
 				store_name:"",
 				goods_price:'',
+				order_sn:"",			//订单编号
 				checkSuccess:false
 			}
 		},
@@ -197,7 +218,26 @@
 					}
 				});
 			},
-			//验证
+			//得物提交
+			taskOrderCommit(){
+				if(this.order_sn == ''){
+					this.$toast("请输入订单编号");
+				}else{
+					let req = {
+						usertask_id:this.task_id,
+						order_sn:this.order_sn
+					}
+					resource.taskOrderCommit(req).then(res => {
+						if(res.data.code == 1){
+							this.$toast(res.data.msg);
+							this.$router.go(-2);
+						}else{
+							this.$toast(res.data.msg);
+						}
+					});
+				}
+			},
+			//淘宝/拼多多/抖音验证
 			checkTask(){
 				if(this.store_name == ''){
 					this.$toast("请输入店铺名称");
@@ -217,12 +257,12 @@
 					})
 				}
 			},
-			//提交
+			//淘宝/拼多多/抖音提交
 			submitTask(){
 				resource.commitTask({usertask_id:this.task_id,}).then(res => {
 					if(res.data.code == 1){
 						this.$toast(res.data.msg);
-						this.$router.go(-1);
+						this.$router.go(-2);
 					}else{
 						this.$toast(res.data.msg);
 					}

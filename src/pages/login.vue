@@ -1,10 +1,21 @@
 <template>
 	<div class="container">
 		<div class="login_title">密码登录</div>
-		<input class="input_element" type="type" placeholder="请输入旺旺号" v-model="wangwang">
+		<input class="input_element" type="text" placeholder="请输入旺旺号" v-model="wangwang">
 		<input class="input_element password" type="password" placeholder="请输入密码" v-model="password">
 		<div class="toast_text">第一次登录为设置密码</div>
 		<div class="login_but" @click="login">登录</div>
+		<div class="dialog_box" v-if="show_dialog">
+			<div class="code_box">
+				<img class="close" src="../assets/close.png" @click="show_dialog = false">
+				<div class="toast">需要向{{phone}}发送一条验证码</div>
+				<div class="code_row">
+					<input class="input_element" type="number" placeholder="请输入验证码" v-model="sms_code">
+					<div class="but_text" :class="{'but_text_active':!notBut}" @click="getCode">{{but_text}}</div>
+				</div>
+				<div class="login_but" @click="commit">确认</div>
+			</div>
+		</div>
 	</div>
 </template>
 <style lang="less" scoped>
@@ -21,7 +32,7 @@
 	.input_element{
 		border-radius: .08rem;
 		background: #F7FFFD;
-		width: 6.58rem;
+		flex:1;
 		height: .92rem;
 		padding-left: .6rem;
 		display: flex;
@@ -60,6 +71,53 @@
 		font-size: .32rem;
 		color:#fff;
 	}
+	.dialog_box{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background:rgba(0,0,0,.8);
+		display:flex;
+		align-items: center;
+		justify-content: center;
+		padding-left: .3rem;
+		padding-right: .3rem;
+		.code_box{
+			background:#fff;
+			width: 100%;
+			padding: 1rem .5rem;
+			display:flex;
+			flex-direction: column;
+			align-items: center;
+			position: relative;
+			.close{
+				position: absolute;
+				top: 0;
+				right: 0;
+				width: .4rem;
+			}
+			.toast{
+				margin-top: .6rem;
+				font-size: .26rem;
+				color: red;
+			}
+			.code_row{
+				width: 100%;
+				display:flex;
+				align-items: center;
+				.but_text{
+					font-size: .3rem;
+					color:#00C693;
+				}
+				.but_text_active{
+					font-size: .3rem;
+					color:#666666;
+				}
+			}
+			
+		}
+	}
 }
 </style>
 <script>
@@ -69,9 +127,19 @@
 			return{
 				wangwang:"",
 				password:"",
-			}
-		},
-		methods:{
+				show_dialog:false,
+				user_id:"",
+				phone:"",
+				but_text:"发送验证码",
+				notBut: true,                   	//默认获取验证码按钮可点击
+      			time:60,                        	//默认倒数60秒
+      			sms_code:""
+      		}
+      	},
+      	created(){
+      		localStorage.clear();
+      	},
+      	methods:{
 			// 登录
 			login(){
 				if(this.wangwang == ''){
@@ -85,17 +153,73 @@
 					}
 					resource.login(req).then(res => {
 						if(res.data.code == 1){
+							localStorage.setItem('secret_key',res.data.data.secret_key);
 							this.$toast(res.data.msg);
 							this.$router.replace('/index');
+						}else if(res.data.code == -1){
+							this.show_dialog = true;
+							this.user_id = res.data.data.user_id;
+							this.phone = res.data.data.phone;
 						}else{
 							this.$toast(res.data.msg);
 						}
 					})
 				}
-				
-			}
-		}
-	}
+			},	
+			//获取验证码
+			getCode(){
+      			if(this.notBut == true){//如果按钮可以点击
+      				let arg = {
+      					user_id:this.user_id
+      				}
+      				resource.loginverifyGet(arg).then(res => {
+            			if(res.data.code == 1){ //发送成功
+            				this.$toast("发送成功...");
+            				this.timeDown();
+            			}else{
+            				this.$toast(res.data.msg);
+            			}
+            		});
+      			}else{
+      				this.$toast("操作频繁");
+      			}
+      		},
+			// 倒计时
+			timeDown () {
+				var _this = this;
+				if (_this.time > 0) {
+        			_this.notBut = false;   //按钮不可点击
+        			_this.time --;
+        			_this.but_text = "重新发送" + _this.time + "秒";
+        			setTimeout(_this.timeDown, 1000);
+        		} else {
+        			_this.notBut = true;    //按钮可以点击
+        			_this.time = 60;
+        			_this.but_text = "获取验证码";
+        		}
+        	},
+        	commit(){
+        		if(this.sms_code == ""){
+        			this.$toast("请输入验证码");
+        		}else{
+        			let arg = {
+        				user_id:this.user_id,
+        				sms_code:this.sms_code
+        			}
+        			resource.loginverifyPost(arg).then(res => {
+        				if(res.data.code == 1){ 
+        					localStorage.setItem('secret_key',res.data.data.secret_key);
+        					this.show_dialog = false;
+        					this.$toast(res.data.msg);
+        					this.$router.replace('/index');
+        				}else{
+        					this.$toast(res.data.msg);
+        				}
+        			});
+        		}
+        	}
+        }
+    }
 </script>
 
 

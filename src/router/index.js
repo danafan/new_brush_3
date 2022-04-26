@@ -9,6 +9,10 @@ const create_problem = resolve=>System.import('@/pages/create_problem')
 const order_detail = resolve=>System.import('@/pages/order_detail')
 const disciple = resolve=>System.import('@/pages/disciple')
 const disciple_order = resolve=>System.import('@/pages/disciple_order')
+const toast = resolve=>System.import('@/pages/toast')
+const get_code = resolve=>System.import('@/pages/get_code')
+const fill_info = resolve=>System.import('@/pages/fill_info')
+const bind_wx = resolve=>System.import('@/pages/bind_wx')
 
 
 Vue.use(Router);
@@ -55,11 +59,35 @@ const router = new Router({
 		name:"徒弟订单",
 		component: disciple_order
 	},
+	{
+		path: '/toast',
+		name:"提示",
+		component: toast
+	},
+	{
+		path: '/get_code',
+		name:"填写资料",
+		component: get_code
+	},
+	{
+		path: '/fill_info',
+		name:"填写资料",
+		component: fill_info
+	},
+	{
+		path: '/bind_wx',
+		name:"填写资料",
+		component: bind_wx
+	},
 	]
 })
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
 	return originalPush.call(this, location).catch(err => err)
 }
+router.beforeEach((to, from, next) => {
+	document.title = to.name;
+	next();
+})
 
 export default router;

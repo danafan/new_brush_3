@@ -5,21 +5,44 @@
 			<div class="title_text">接单</div>
 			<div class="route_title" v-if="userInfo.user_type == 1" @click="$router.push('/disciple')">徒弟列表</div>
 		</div>
-		<div class="announcement" v-if="announcement != ''" @click="showAnnouncement = true">
+		<div class="announcement">
 			<div class="left">
 				<img class="announcement_icon" src="../assets/announcement.png">
-				<div class="announcement_text">{{announcement}}</div>
+				<div class="swiper_box">
+					<mt-swipe :showIndicators="false">
+						<mt-swipe-item v-for="item in announcement_list">
+							<div class="announcement_text" @click="getAnnouncement(item.content)">{{item.content}}</div>
+						</mt-swipe-item>
+					</mt-swipe>
+				</div>
 			</div>
 			<img class="right_icon" src="../assets/right.png">
 		</div>
-		<div class="list_content">
-			<div class="wang_box">
+		<div class="banner" v-if="banner_list.length > 0">
+			<mt-swipe>
+				<mt-swipe-item v-for="item in banner_list" :key="item.banner_id">
+					<img :src="item.img_url" @click="routeUrl(item)">
+				</mt-swipe-item>
+			</mt-swipe>
+		</div>
+		<div class="tab">
+			<div class="tab_item tb" :class="{'active_item':tab_active == '1'}" @click="checkTab('1')">淘宝</div>
+			<div class="tab_item pdd" :class="{'active_item':tab_active == '2'}" @click="checkTab('2')">拼多多</div>
+			<!-- <div class="tab_item dw" :class="{'active_item':tab_active == '3'}" @click="checkTab('3')">得物退款</div> -->
+			<div class="tab_item dw" :class="{'active_item':tab_active == '4'}" @click="checkTab('4')">抖音</div>
+		</div>
+		<div class="empty" v-if="(tab_active == '2' || tab_active == '3' || tab_active == '4') && userInfo.phone == ''">
+			<img class="empty_icon" src="../assets/empty_icon.png">
+			<div class="empty_text">请前往填写资料填写手机号绑定</div>
+		</div>
+		<div class="list_content" v-else>
+			<div class="wang_box" v-if="(tab_active == '1' && userInfo.ww != '') || (tab_active == '2' && userInfo.phone != '') || (tab_active == '3' && userInfo.phone != '') || (tab_active == '4' && userInfo.phone != '')">
 				<div class="left">
 					<div class="tag_img"></div>
-					<div class="wang_code">{{userInfo.ww}}</div>
+					<div class="wang_code">{{tab_active=='1'?userInfo.ww:userInfo.phone}}</div>
 				</div>
+				<div class="order_but" v-if="userInfo.task_status == 0" @click="applyTask">接单</div>
 				<div class="countdown" v-if="userInfo.task_status == 1">结束时间：{{userInfo.apply_expiration_time}}</div>
-				<div class="order_but" v-if="userInfo.task_status == 0" v-clipboard="copy_value" @click="applyTask">接单</div>
 				<div class="order_but has_order_but" v-if="userInfo.task_status == 1" @click="cancelApply">取消</div>
 				<div class="order_but hui_order_but" v-if="userInfo.task_status == 2" @click="$toast('您有未完成订单');">已接单</div>
 			</div>
@@ -54,7 +77,7 @@
 			<div class="order_content">
 				<div class="content_info">
 					<div class="info_text">您接到一个新的任务订单，确认要开始吗？
-					超过10分钟不确认将取消该任务订单</div>
+					超过{{confirm_wait_time}}分钟不确认将取消该任务订单</div>
 					<div class="countdown">{{countdown}}</div>
 				</div>
 				<div class="buts">
@@ -64,6 +87,8 @@
 				</div>
 			</div>
 		</div>
+		<!-- 填写资料 -->
+		<img class="info_icon" v-if="userInfo.openid == '' || userInfo.phone == '' || userInfo.bank_card_number == '' || userInfo.alipay_acount == ''" src="../assets/info_icon.png" @click="editInfo">
 	</div>
 </template>
 <style lang="less" scoped>
@@ -113,6 +138,7 @@
 		padding-left: .22rem;
 		padding-right: .22rem;
 		.left{
+			flex:1;
 			display: flex;
 			align-items: center;
 			.announcement_icon{
@@ -120,21 +146,76 @@
 				width: .36rem;
 				height: .36rem;
 			}
-			.announcement_text{
+			.swiper_box{
 				flex:1;
-				font-size: .24rem;
-				color: #333333;
-				display: -webkit-box;
-				-webkit-line-clamp: 1;
-				-webkit-box-orient: vertical;
-				text-overflow: ellipsis;
-				overflow: hidden;
+				height: .58rem;
+				.announcement_text{
+					height: .58rem;
+					line-height: .58rem;
+					font-size: .24rem;
+					color: #333333;
+					display: -webkit-box;
+					-webkit-line-clamp: 1;
+					-webkit-box-orient: vertical;
+					text-overflow: ellipsis;
+					overflow: hidden;
+				}
 			}
 		}
 		.right_icon{
 			margin-left: .1rem;
 			width: .36rem;
 			height: .36rem;
+		}
+	}
+	.banner{
+		width: 100%;
+		height: 2.35rem;
+		.mint-swipe-items-wrap{
+			width: 100%;
+			height: 100%;
+			.mint-swipe-item{
+				width: 100%;
+				height: 100%; 
+				img{
+					width: 100%;
+					height: 100%;
+				}
+			}
+			.swiper-pagination{
+				height: .001rem;
+				bottom: 70px;
+			}
+		}
+	}
+	.tab{
+		padding-top: .28rem;
+		width:100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		.tab_item{
+			height: .64rem;
+			width:30%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size:.28rem;
+		}
+		.tb{
+			border:1px solid #00C693;
+			border-radius:.32rem 0 0 .32rem;
+		}
+		.pdd{
+			border:1px solid #00C693;
+		}
+		.dw{
+			border:1px solid #00C693;
+			border-radius:0 .32rem .32rem 0;
+		}
+		.active_item{
+			background:#00C693;
+			color: #fff;
 		}
 	}
 	.list_content{
@@ -246,6 +327,22 @@
 			}
 		}
 	}
+	.empty{
+		flex: 1;
+		display: flex;
+		flex-direction:column;
+		align-items: center;
+		justify-content: center;
+		.empty_icon{
+			margin-bottom: .56rem;
+			width:3.88rem;
+			height: 3rem;
+		}
+		.empty_text{
+			font-size:.3rem;
+			color: #666666;
+		}
+	}
 	.announcement_box{
 		background: rgba(0, 0, 0, 0.5);;
 		position: absolute;
@@ -276,6 +373,13 @@
 				font-weight:600;
 			}
 		}
+	}
+	.info_icon{
+		position: absolute;
+		right: .14rem;
+		bottom: .88rem;
+		width: 1.36rem;
+		height: 1.36rem;
 	}
 }
 .check_order{
@@ -331,18 +435,23 @@
 <script>
 	import { MessageBox } from 'mint-ui';
 	import resource from '../api/resource.js'
+	import { Swipe, SwipeItem } from 'mint-ui'
 	export default{
 		data(){
 			return{
 				userInfo:{},		//用户信息
-				copy_value:"",		//复制内容
+				banner_list:[],		//banner列表
+				copy_value:"qweqwe",		//复制内容
 				taskList:[],		//任务列表
 				settimeout:null,	//刷新用户信息
 				setinterval:null,	//倒计时
+				confirm_wait_time:"",
 				showAnnouncement:false,
-				checkOrder:false,
 				announcement:"",
-				countdown:""
+				checkOrder:false,
+				announcement_list:[],
+				countdown:"",
+				tab_active:'1',			//
 			}
 		},
 		created(){
@@ -352,6 +461,8 @@
 			this.getUserTask();
 			//获取公告
 			this.getLatestNotice();
+			//获取banner列表
+			this.bannerList();
 		},
 		beforeDestroy(){
 			clearTimeout(this.settimeout);
@@ -361,18 +472,45 @@
 			getLatestNotice(){
 				resource.getLatestNotice().then(res => {
 					if(res.data.code == 1){
-						this.announcement = res.data.data.content;
+						this.announcement_list = res.data.data;
 					}else{
 						this.$toast(res.data.msg);
 					}
 				})
+			},
+			//查看公告
+			getAnnouncement(content){
+				this.showAnnouncement = true;
+				this.announcement = content;
+			},
+			//获取banner列表
+			bannerList(){
+				resource.bannerList().then(res => {
+					if(res.data.code == 1){
+						this.banner_list = res.data.data;
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
+			//点击图片
+			routeUrl(item){
+				if(item.type == 2){
+					window.open(item.jump_url);
+				}
+			},
+			//切换导航
+			checkTab(type){
+				this.tab_active = type;
+				//获取用户任务
+				this.getUserTask();
 			},
 			//获取用户信息
 			getUserInfo(){
 				resource.getUserStatus().then(res => {
 					if(res.data.code == 1){
 						this.userInfo = res.data.data;
-						this.copy_value = res.data.data.copy_text.value;
+						this.copy_value = this.userInfo.copy_text.value;
 						if(this.userInfo.task_status == 1){
 							this.settimeout = setTimeout(() => {
 								//获取用户信息
@@ -389,28 +527,17 @@
 			},
 			//获取用户任务
 			getUserTask(){
-				resource.getUserTask({ww:this.userInfo.ww}).then(res => {
+				resource.getUserTask({shop_type:this.tab_active}).then(res => {
 					if(res.data.code == 1){
 						let data = res.data.data;
 						if(data.wait_confirm == '1'){	//有未确定的任务
+							this.confirm_wait_time = data.confirm_wait_time;
 							this.checkOrder = true;
-							let startTime = new Date().getTime();
-							let endTime = data.confirm_wait_time;
-							this.setinterval = setInterval(() => {
-        						var ts = endTime - startTime;//计算剩余的毫秒数
-        						if(ts == 0){
-        							clearInterval(this.setinterval);
-        							this.checkOrder = false;
-        							//获取用户任务
-        							this.getUserTask();
-        						}
-        						var mm = parseInt(ts  / 60 % 60, 10);//计算剩余的分钟数
-        						var ss = parseInt(ts  % 60, 10);//计算剩余的秒数
-        						mm = checkTime(mm);
-        						ss = checkTime(ss);
-        						this.countdown = mm + "：" + ss;
-        					},1000);
+							//倒计时
+							this.countDown(data.confirm_end_time);
 						}else{
+							clearInterval(this.setinterval);
+							this.checkOrder = false;
 							this.taskList = data.usertasks;
 						}
 					}else{
@@ -419,17 +546,36 @@
 				})
 			},
 			checkTime(i){
-				if (i <=10) {
+				if (i <10) {
 					i = "0" + i;
 				}
 				return i;
 			},
+			countDown(endTime){
+				this.setinterval = setInterval(() => {
+					let startTime = Date.parse(new Date())/1000;
+        			let ts = endTime - startTime;//计算剩余的毫秒数
+        			if(ts <= 0){
+        				this.countdown = "00：00";
+        				//获取用户任务
+        				this.getUserTask();
+        			}else{
+        				var mm = parseInt(ts  / 60 % 60, 10);//计算剩余的分钟数
+        				var ss = parseInt(ts  % 60, 10);//计算剩余的秒数
+        				mm = this.checkTime(mm);
+        				ss = this.checkTime(ss);
+        				this.countdown = mm + "：" + ss;
+        			}
+        		},1000);
+			},
 			//首页取消
 			noConfirmTask(){
-				resource.noConfirmTask({ww:this.userInfo.ww}).then(res => {
+				resource.noConfirmTask({shop_type:this.tab_active}).then(res => {
 					if(res.data.code == 1){
 						clearInterval(this.setinterval);
 						this.checkOrder = false;
+						//获取用户信息
+						this.getUserInfo();
         				//获取用户任务
         				this.getUserTask();
         			}else{
@@ -439,10 +585,12 @@
 			},
 			//首页确定
 			confirmTask(){
-				resource.confirmTask({ww:this.userInfo.ww}).then(res => {
+				resource.confirmTask({shop_type:this.tab_active}).then(res => {
 					if(res.data.code == 1){
 						clearInterval(this.setinterval);
 						this.checkOrder = false;
+						//获取用户信息
+						this.getUserInfo();
         				//获取用户任务
         				this.getUserTask();
         			}else{
@@ -452,12 +600,11 @@
 			},
 			//申请任务
 			applyTask(){
-				resource.applyTask({ww:this.userInfo.ww}).then(res => {
+				this.$copyText( this.copy_value );
+				resource.applyTask({shop_type:this.tab_active}).then(res => {
 					if(res.data.code == 1){
 						//获取用户信息
 						this.getUserInfo();
-						//倒计时方法
-						this.setTimeoutFun();
 					}else{
 						this.$toast(res.data.msg);
 					}
@@ -467,7 +614,7 @@
 			cancelApply(){
 				MessageBox.confirm('确定取消?').then(action => {
 					if(action == 'confirm'){
-						resource.cancelApply({ww:this.userInfo.ww}).then(res => {
+						resource.cancelApply().then(res => {
 							if(res.data.code == 1){
 								this.$toast(res.data.msg);
 								//获取用户信息
@@ -481,14 +628,27 @@
 			},
 			//任务详情
 			taskDetail(task_id,status){
+				this.$copyText( this.copy_value );
 				if(status == 0){
-					this.$router.push('/order_detail?task_id=' + task_id);
+					this.$router.push(`/toast?task_id=${task_id}&shop_type=${this.tab_active}`);
 				}else if(status == 1){
 					this.$toast('任务正在审核中,请耐心等待...');
 				}else if(status == 3){
 					this.$toast('任务已取消');
 				}
+			},
+			//点击跳转页面
+			editInfo(){
+				if(this.userInfo.bind_wx_verify == 1){
+					this.$router.push('/fill_info');
+				}else{
+					this.$router.push('/get_code');
+				}
 			}
+		},
+		components:{
+			Swipe,
+			SwipeItem
 		}
 	}
 </script>
