@@ -517,6 +517,7 @@
 								this.getUserInfo();
 							},10000)
 						}else if(this.userInfo.task_status == 2){
+							this.tab_active = this.userInfo.shop_type;
 							//获取用户任务
 							this.getUserTask();
 						}
