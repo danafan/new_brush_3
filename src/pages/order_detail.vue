@@ -210,7 +210,8 @@
 						resource.abandonTask({usertask_id:this.task_id}).then(res => {
 							if(res.data.code == 1){
 								this.$toast(res.data.msg);
-								this.$router.go(-1);
+								this.$router.push('/index')
+								// this.$router.go(-1);
 							}else{
 								this.$toast(res.data.msg);
 							}
