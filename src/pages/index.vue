@@ -331,6 +331,8 @@
 		created(){
 			//获取用户信息
 			this.getUserInfo();
+			//获取用户任务
+			this.getUserTask();
 			//获取banner列表
 			this.bannerList();
 		},
