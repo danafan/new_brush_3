@@ -1,23 +1,5 @@
 <template>
 	<div class="index_container">
-		<div class="title_box">
-			<div class="service" @click="$router.push('/service')">反馈问题</div>
-			<div class="title_text">接单</div>
-			<div class="route_title" v-if="userInfo.user_type == 1" @click="$router.push('/disciple')">徒弟列表</div>
-		</div>
-		<div class="announcement">
-			<div class="left">
-				<img class="announcement_icon" src="../assets/announcement.png">
-				<div class="swiper_box">
-					<mt-swipe :showIndicators="false">
-						<mt-swipe-item v-for="item in announcement_list">
-							<div class="announcement_text" @click="getAnnouncement(item.content)">{{item.content}}</div>
-						</mt-swipe-item>
-					</mt-swipe>
-				</div>
-			</div>
-			<img class="right_icon" src="../assets/right.png">
-		</div>
 		<div class="banner" v-if="banner_list.length > 0">
 			<mt-swipe>
 				<mt-swipe-item v-for="item in banner_list" :key="item.banner_id">
@@ -28,7 +10,6 @@
 		<div class="tab">
 			<div class="tab_item tb" :class="{'active_item':tab_active == '1'}" @click="checkTab('1')">淘宝</div>
 			<div class="tab_item pdd" :class="{'active_item':tab_active == '2'}" @click="checkTab('2')">拼多多</div>
-			<!-- <div class="tab_item dw" :class="{'active_item':tab_active == '3'}" @click="checkTab('3')">得物退款</div> -->
 			<div class="tab_item dw" :class="{'active_item':tab_active == '4'}" @click="checkTab('4')">抖音</div>
 		</div>
 		<div class="empty" v-if="(tab_active == '2' || tab_active == '3' || tab_active == '4') && userInfo.phone == ''">
@@ -65,13 +46,6 @@
 				</div>
 			</div>
 		</div>
-		<!-- 公告内容 -->
-		<div class="announcement_box" v-if="showAnnouncement" @click="showAnnouncement = false">
-			<div class="announcement_content">
-				<div class="top">{{announcement}}</div>
-				<div class="ok">确认</div>
-			</div>
-		</div>
 		<!-- 已经接到任务 -->
 		<div class="check_order" v-if="checkOrder">
 			<div class="order_content">
@@ -100,74 +74,7 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	.title_box{
-		background: #fff;
-		width: 100%;
-		height: .88rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding-left: .2rem;
-		position: relative;
-		.title_text{
-			font-size: .32rem;
-			color: #38393A;
-			font-weight:500;
-		}
-		.service{
-			position: absolute;
-			left: .2rem;
-			font-size: .28rem;
-			color: #000000;
-		}
-		.route_title{
-			position: absolute;
-			right: .2rem;
-			font-size: .28rem;
-			color: #000000;
-		}
-	}
-	.announcement{
-		border-top:1px solid #E8E8E8;
-		background: #fff;
-		width: 100%;
-		height: .64rem;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding-left: .22rem;
-		padding-right: .22rem;
-		.left{
-			flex:1;
-			display: flex;
-			align-items: center;
-			.announcement_icon{
-				margin-right: .1rem;
-				width: .36rem;
-				height: .36rem;
-			}
-			.swiper_box{
-				flex:1;
-				height: .58rem;
-				.announcement_text{
-					height: .58rem;
-					line-height: .58rem;
-					font-size: .24rem;
-					color: #333333;
-					display: -webkit-box;
-					-webkit-line-clamp: 1;
-					-webkit-box-orient: vertical;
-					text-overflow: ellipsis;
-					overflow: hidden;
-				}
-			}
-		}
-		.right_icon{
-			margin-left: .1rem;
-			width: .36rem;
-			height: .36rem;
-		}
-	}
+	overflow-y: scroll;
 	.banner{
 		width: 100%;
 		height: 2.35rem;
@@ -343,37 +250,6 @@
 			color: #666666;
 		}
 	}
-	.announcement_box{
-		background: rgba(0, 0, 0, 0.5);;
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		.announcement_content{
-			border-radius: .12rem;
-			background: #fff;
-			width: 5.8rem;
-			.top{
-				padding:.3rem .24rem;
-				font-size: .24rem;
-				color:#333333;
-			}
-			.ok{
-				border-top: 1px solid #F2F2F2;
-				width: 100%;
-				text-align: center;
-				height: .86rem;
-				line-height: .86rem;
-				color:#333333;
-				font-size: .3rem;
-				font-weight:600;
-			}
-		}
-	}
 	.info_icon{
 		position: absolute;
 		right: .14rem;
@@ -446,8 +322,6 @@
 				settimeout:null,	//刷新用户信息
 				setinterval:null,	//倒计时
 				confirm_wait_time:"",
-				showAnnouncement:false,
-				announcement:"",
 				checkOrder:false,
 				announcement_list:[],
 				countdown:"",
@@ -457,10 +331,6 @@
 		created(){
 			//获取用户信息
 			this.getUserInfo();
-			//获取用户任务
-			this.getUserTask();
-			//获取公告
-			this.getLatestNotice();
 			//获取banner列表
 			this.bannerList();
 		},
@@ -468,21 +338,6 @@
 			clearTimeout(this.settimeout);
 		},
 		methods:{
-			//获取公告
-			getLatestNotice(){
-				resource.getLatestNotice().then(res => {
-					if(res.data.code == 1){
-						this.announcement_list = res.data.data;
-					}else{
-						this.$toast(res.data.msg);
-					}
-				})
-			},
-			//查看公告
-			getAnnouncement(content){
-				this.showAnnouncement = true;
-				this.announcement = content;
-			},
 			//获取banner列表
 			bannerList(){
 				resource.bannerList().then(res => {

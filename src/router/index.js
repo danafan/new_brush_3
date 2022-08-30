@@ -2,7 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 const login = resolve=>System.import('@/pages/login')
+const tab_menu = resolve=>System.import('@/pages/tab_menu')
 const index = resolve=>System.import('@/pages/index')
+const mjx = resolve=>System.import('@/pages/mjx')
+const mjx_detail = resolve=>System.import('@/pages/mjx_detail')
 const service = resolve=>System.import('@/pages/service')
 const associated_task = resolve=>System.import('@/pages/associated_task')
 const create_problem = resolve=>System.import('@/pages/create_problem')
@@ -25,9 +28,26 @@ const router = new Router({
 		component: login
 	},
 	{
-		path: '/index',
-		name:"首页",
-		component: index
+		path: '/tab_menu',
+		name:"导航页",
+		component: tab_menu,
+		children:[
+		{
+			path: '/index',
+			name:"接单",
+			component: index
+		},
+		{
+			path: '/mjx',
+			name:"买家秀",
+			component: mjx
+		}
+		]
+	},
+	{
+		path: '/mjx_detail',
+		name:"买家秀详情",
+		component: mjx_detail
 	},
 	{
 		path: '/service',
