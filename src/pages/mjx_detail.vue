@@ -93,7 +93,7 @@
 			<div class="content">
 				<div class="content_title">
 					<div class="tag_img"></div>
-					<div class="title_text">评价返图</div>
+					<div class="title_text">评价返图（最少一张）</div>
 				</div>
 				<div class="content_box">
 					<div class="img_list">
@@ -105,19 +105,34 @@
 					</div>
 				</div>
 			</div>
+			<div class="bottom_emo">
+				<img class="emo_icon" src="../assets/emo_icon.png">
+				<div class="emo_text">不允许超过五张图片</div>
+			</div>
 		</div>
 		<div class="bottom_set">
-			<div class="but give">放弃任务</div>
-			<div class="but commit">提交任务</div>
+			<div class="but give" @click="show_dialog = true">放弃任务</div>
+			<div class="but commit" @click="commitFn">提交任务</div>
+		</div>
+		<div class="announcement_box" v-if="show_dialog" @click.self="show_dialog = false">
+			<div class="announcement_content">
+				<div class="top">
+					<textarea class="input_box" v-model="give_remark"  placeholder="小主人请您输入放弃具体原因～"></textarea>
+				</div>
+				<div class="ok" @click="commitGive">提交</div>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
 	import UploadFile from '../components/UploadFile.vue'
+	import { MessageBox } from 'mint-ui';
 	export default{
 		data(){
 			return{
 				file_list:[],		//文件列表
+				show_dialog:false,	//放弃任务弹窗
+				give_remark:"",
 			}
 		},
 		methods:{
@@ -136,6 +151,26 @@
 					}
 				})
 			},
+			//提交拒绝
+			commitGive(){
+				if(this.give_remark == ''){
+					this.$toast('请输入拒绝原因!');
+				}else{
+
+				}
+			},
+			//点击提交
+			commitFn(){
+				if(this.file_list.length == 0){
+					this.$toast('至少上传一张图片!');
+				}else{
+					MessageBox.confirm('确认提交?').then(action => {
+						if(action == 'confirm'){
+							consoel.log(this.file_list);
+						}
+					});
+				}
+			}
 		},
 		components:{
 			UploadFile
@@ -225,6 +260,20 @@
 				}
 			}
 		}
+		.bottom_emo{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			.emo_icon{
+				margin-right:.08rem;
+				width: .48rem;
+				height: .48rem;
+			}
+			.emo_text{
+				font-size: .28rem;
+				color: #333333;
+			}
+		}
 	}
 	.bottom_set{
 		background: #ffffff;
@@ -249,6 +298,47 @@
 		.commit{
 			background: #00C693;
 			color: #ffffff;
+		}
+	}
+	.announcement_box{
+		background: rgba(0, 0, 0, 0.5);;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		.announcement_content{
+			border-radius: .12rem;
+			background: #fff;
+			width: 5.8rem;
+			.top{
+				padding:.3rem .24rem;
+				font-size: .24rem;
+				color:#333333;
+				.input_box{
+					box-sizing: border-box;
+					outline: none;
+					border:none;
+					border-radius:.08rem;
+					background: #F4F4F4;
+					width: 100%;
+					height: 2.12rem;
+					padding:.3rem .2rem;
+				}
+			}
+			.ok{
+				border-top: 1px solid #F2F2F2;
+				width: 100%;
+				text-align: center;
+				height: .86rem;
+				line-height: .86rem;
+				color:#333333;
+				font-size: .3rem;
+				font-weight:600;
+			}
 		}
 	}
 }

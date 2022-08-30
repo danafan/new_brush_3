@@ -46,7 +46,7 @@ const router = new Router({
 	},
 	{
 		path: '/mjx_detail',
-		name:"买家秀详情",
+		name:"买家秀",
 		component: mjx_detail
 	},
 	{
