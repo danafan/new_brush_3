@@ -3,9 +3,7 @@ module.exports = {
 	devServer: {
 		proxy: {
 			'/mobile': {
-				// target: 'http://ro.jibaowo.com/',
-				// target: 'http://qwe.qqmmdog.com',
-				target:'http://ro.yidianrenwu.com/',
+				target:'http://xrw.jinshijinri.com/',
 				ws: true,
 				changOlrigin: true,		//是否跨域
 			}

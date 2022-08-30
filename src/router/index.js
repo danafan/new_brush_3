@@ -46,7 +46,7 @@ const router = new Router({
 	},
 	{
 		path: '/mjx_detail',
-		name:"买家秀",
+		name:"买家秀详情",
 		component: mjx_detail
 	},
 	{
@@ -86,7 +86,7 @@ const router = new Router({
 	},
 	{
 		path: '/get_code',
-		name:"填写资料",
+		name:"获取验证码",
 		component: get_code
 	},
 	{
@@ -96,7 +96,7 @@ const router = new Router({
 	},
 	{
 		path: '/bind_wx',
-		name:"填写资料",
+		name:"绑定微信",
 		component: bind_wx
 	},
 	]

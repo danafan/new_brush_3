@@ -28,6 +28,11 @@ let path = {
 	masterSmsVerify:'user/mastersmsverify',				//师傅验证码验证
 	bindaliPayAcount:'user/bindalipay',					//绑定支付宝
 	bindBank:'user/bindbank',							//绑定银行卡
+	getEvaluateTask:'evaluate/getevaluatetask',			//获取买家秀任务
+	getEvaluateDetail:'evaluate/getevaluatedetail',		//买家秀任务详情
+	cancelEvaluate:'evaluate/cancelevaluate',			//取消任务
+	submitEvaluate:'evaluate/submitevaluate',			//提交任务
+	getEvaluateNum:'user/getuserstatus',				//获取待处理买家秀任务数量
 
 }
 export default{
@@ -146,6 +151,26 @@ export default{
 	//绑定银行卡
 	bindBank(params){
 		return http.post(path.bindBank, params)
+	},
+	//获取买家秀任务
+	getEvaluateTask(params){
+		return http.get(path.getEvaluateTask, params)
+	},
+	//买家秀任务详情
+	getEvaluateDetail(params){
+		return http.get(path.getEvaluateDetail, params)
+	},
+	//取消任务
+	cancelEvaluate(params){
+		return http.post(path.cancelEvaluate, params)
+	},
+	//提交任务
+	submitEvaluate(params){
+		return http.post(path.submitEvaluate, params)
+	},
+	//获取待处理买家秀任务数量
+	getEvaluateNum(params){
+		return http.get(path.getEvaluateNum, params)
 	},
 
 }

@@ -8,40 +8,44 @@
 				</div>
 				<div class="content_box">
 					<div class="content_row">
-						<div class="lable">店铺名：</div>
-						<div class="value">一条文艺男</div>
+						<div class="lable">平台：</div>
+						<div class="value">{{task_info.shop_type_name}}</div>
 					</div>
 					<div class="content_row">
-						<div class="lable">旺旺号：</div>
-						<div class="value">一条文艺男</div>
+						<div class="lable">店铺名：</div>
+						<div class="value">{{task_info.shop_name}}</div>
+					</div>
+					<div class="content_row">
+						<div class="lable">买家账号：</div>
+						<div class="value">{{task_info.ww}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">订单号：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.order_sn}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">商品ID：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.goods_id}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">订单日期：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.order_time}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">邀请时间：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.invitation_time}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">提交时间：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.submit_time}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">完成时间：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.finish_time}}</div>
 					</div>
 					<div class="content_row">
 						<div class="lable">当前状态：</div>
-						<div class="value">一条文艺男</div>
+						<div class="value">{{task_info.status_name}}</div>
 					</div>
 				</div>
 			</div>
@@ -50,9 +54,8 @@
 					<div class="tag_img"></div>
 					<div class="title_text">评价内容</div>
 				</div>
-				<div class="content_box">
-					评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容
-				</div>
+				<div class="content_box" v-clipboard:copy="task_info.eva_content"
+				v-clipboard:success="copySuccess">{{task_info.eva_content}}</div>
 			</div>
 			<div class="content">
 				<div class="content_title">
@@ -60,43 +63,50 @@
 					<div class="title_text">图片</div>
 				</div>
 				<div class="content_box">
-					<img class="view_file" src="../static/pdd_toast_icon.png">
+					<div class="img_list">
+						<img class="view_file" :src="item" v-for="item in task_info.eva_img">
+					</div>
 				</div>
 			</div>
-			<div class="content">
+			<div class="content" v-if="task_info.eva_video.length > 0">
 				<div class="content_title">
 					<div class="tag_img"></div>
 					<div class="title_text">视频</div>
 				</div>
 				<div class="content_box">
-					<img class="view_file" src="../static/pdd_toast_icon.png">
+					<video class="video_file"
+					controls autoplay :src="task_info.eva_video[0]"></video>
 				</div>
 			</div>
-			<div class="content">
+			<div class="content" v-if="task_info.add_eva_content">
 				<div class="content_title">
 					<div class="tag_img"></div>
 					<div class="title_text">追加内容</div>
 				</div>
-				<div class="content_box">
-					评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容
-				</div>
+				<div class="content_box" v-clipboard:copy="task_info.add_eva_content"
+				v-clipboard:success="copySuccess">{{task_info.add_eva_content}}</div>
 			</div>
-			<div class="content">
+			<div class="content" v-if="task_info.add_eva_img.length > 0">
 				<div class="content_title">
 					<div class="tag_img"></div>
 					<div class="title_text">追加图片</div>
 				</div>
 				<div class="content_box">
-					<img class="view_file" src="../static/pdd_toast_icon.png">
+					<div class="img_list">
+						<img class="view_file" :src="item" v-for="item in task_info.add_eva_img">
+					</div>
 				</div>
 			</div>
 			<div class="content">
 				<div class="content_title">
 					<div class="tag_img"></div>
-					<div class="title_text">评价返图（最少一张）</div>
+					<div class="title_text">评价返图</div>
 				</div>
 				<div class="content_box">
-					<div class="img_list">
+					<div class="img_list" v-if="task_info.status == 3 || task_info.status == 4">
+						<img class="view_file" :src="item" v-for="item in task_info.return_img">
+					</div>
+					<div class="img_list" v-else>
 						<div class="img_box" v-for="(item,index) in file_list">
 							<img class="image" :src="item.domain + item.filename">
 							<img class="close" src="../assets/close.png" @click="deleteFile(index)">
@@ -105,12 +115,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="bottom_emo">
+			<div class="content" v-if="task_info.fail_reason">
+				<div class="content_title">
+					<div class="tag_img"></div>
+					<div class="title_text">原因</div>
+				</div>
+				<div class="content_box">{{task_info.fail_reason}}</div>
+			</div>
+			<div class="bottom_emo" v-if="task_info.status == 2 || task_info.status == 5">
 				<img class="emo_icon" src="../assets/emo_icon.png">
 				<div class="emo_text">不允许超过五张图片</div>
 			</div>
 		</div>
-		<div class="bottom_set">
+		<div class="bottom_set" v-if="task_info.status == 2 || task_info.status == 5">
 			<div class="but give" @click="show_dialog = true">放弃任务</div>
 			<div class="but commit" @click="commitFn">提交任务</div>
 		</div>
@@ -125,6 +142,7 @@
 	</div>
 </template>
 <script>
+	import resource from '../api/resource.js'
 	import UploadFile from '../components/UploadFile.vue'
 	import { MessageBox } from 'mint-ui';
 	export default{
@@ -133,9 +151,35 @@
 				file_list:[],		//文件列表
 				show_dialog:false,	//放弃任务弹窗
 				give_remark:"",
+				order_id:"",
+				task_info:{
+					eva_video:[],
+					add_eva_img:[]
+				}
 			}
 		},
+		created(){
+			this.order_id = this.$route.query.order_id;
+			//买家秀任务详情
+			this.getEvaluateDetail();
+		},
 		methods:{
+			copySuccess(){
+				this.$toast('复制成功!');
+			},
+			//买家秀任务详情
+			getEvaluateDetail(){
+				let arg = {
+					order_id:this.order_id
+				}
+				resource.getEvaluateDetail(arg).then(res => {
+					if(res.data.code == 1){
+						this.task_info = res.data.data.evaluate_order;
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
 			//上传文件
 			callbackFn(v){
 				this.file_list.push(v);
@@ -156,7 +200,18 @@
 				if(this.give_remark == ''){
 					this.$toast('请输入拒绝原因!');
 				}else{
-
+					let arg = {
+						order_id:this.order_id,
+						reason:this.give_remark
+					}
+					resource.cancelEvaluate(arg).then(res => {
+						if(res.data.code == 1){
+							this.$toast(res.data.msg);
+							this.$router.go(-1);
+						}else{
+							this.$toast(res.data.msg);
+						}
+					})
 				}
 			},
 			//点击提交
@@ -166,7 +221,22 @@
 				}else{
 					MessageBox.confirm('确认提交?').then(action => {
 						if(action == 'confirm'){
-							consoel.log(this.file_list);
+							let img_arr = [];
+							this.file_list.map(item => {
+								img_arr.push(item.filename)
+							})
+							let arg = {
+								order_id:this.order_id,
+								return_img:img_arr.join(',')
+							}
+							resource.submitEvaluate(arg).then(res => {
+								if(res.data.code == 1){
+									this.$toast(res.data.msg);
+									this.$router.go(-1);
+								}else{
+									this.$toast(res.data.msg);
+								}
+							})
 						}
 					});
 				}
@@ -226,7 +296,12 @@
 						color: #666666;
 					}
 				}
+				.video_file{
+					width: 3.2rem;
+					height: 3.2rem;
+				}
 				.view_file{
+					margin-right:.1rem;
 					border-radius:.08rem;
 					width: 2rem;
 					height: 2rem;
@@ -234,10 +309,10 @@
 				.img_list{
 					width: 100%;
 					display: flex;
-					padding-left:.24rem;
-					padding-right:.24rem;
+					display: flex;
+					flex-wrap: wrap;
 					.img_box{
-						margin-right: .24rem;
+						margin-right:.1rem;
 						width: 2.08rem;
 						height: 2.08rem;
 						position: relative;
@@ -310,6 +385,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		z-index: 9;
 		.announcement_content{
 			border-radius: .12rem;
 			background: #fff;
