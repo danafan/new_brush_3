@@ -33,6 +33,7 @@ let path = {
 	cancelEvaluate:'evaluate/cancelevaluate',			//取消任务
 	submitEvaluate:'evaluate/submitevaluate',			//提交任务
 	getEvaluateNum:'user/getuserstatus',				//获取待处理买家秀任务数量
+	checkTkl:'task/taskchecktkl',						//验证淘口令
 
 }
 export default{
@@ -171,6 +172,10 @@ export default{
 	//获取待处理买家秀任务数量
 	getEvaluateNum(params){
 		return http.get(path.getEvaluateNum, params)
+	},
+	//验证淘口令
+	checkTkl(params){
+		return http.post(path.checkTkl, params)
 	},
 
 }

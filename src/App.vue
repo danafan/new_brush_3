@@ -9,7 +9,6 @@
   export default {
     name: 'app',
     created(){
-      // this.$router.push('/tab_menu')
       resource.getUserStatus().then(res => {
         if(res.data.code == 1){
           this.$router.push('/index')

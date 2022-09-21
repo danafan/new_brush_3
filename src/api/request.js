@@ -7,7 +7,6 @@ export function middleWare(params,type) {
     secret_key:!localStorage.getItem("secret_key")?'':localStorage.getItem("secret_key"),
     timestamp:((new Date()).getTime()/1000).toString().split('.')[0]
   };
-  console.log(target);
   // 生成签名
   var create_sign = {...params,...target};
   var keys = [];        // 所有键名

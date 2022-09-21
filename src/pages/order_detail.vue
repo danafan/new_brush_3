@@ -43,7 +43,8 @@
 					<div class="title_text">按任务要求操作后验证</div>
 				</div>
 				<div class="content_box submit">
-					<input class="input_box" type="text" placeholder="请输入店铺名称" v-model="store_name">
+					<textarea class="text_box" rows="5" placeholder="请输入商品链接" v-model="content" v-if="task_info.is_check_tkl == 1"></textarea>
+					<input class="input_box" type="text" placeholder="请输入店铺名称" v-model="store_name" v-else>
 					<div class="submit_but" @click="checkTask">验证</div>
 				</div>
 			</div>
@@ -137,6 +138,19 @@
 				font-size: .28rem;
 				box-sizing: border-box;
 			}
+			.text_box{
+				border:1px solid #F1F1F1;
+				border-radius: .08rem;
+				background: #f8f8f8;
+				width: 5.1rem;
+				height: 1.6rem;
+				padding-left: .26rem;
+				border: none;
+				outline: none;
+				font-size: .28rem;
+				box-sizing: border-box;
+				padding: .1rem;
+			}
 			input::-webkit-input-placeholder {
 				color: #666666;
 			}
@@ -182,6 +196,7 @@
 				task_id:"",
 				task_info:{},
 				store_name:"",
+				content:"",
 				goods_price:'',
 				order_sn:"",			//订单编号
 				checkSuccess:false
@@ -239,22 +254,48 @@
 			},
 			//淘宝/拼多多/抖音验证
 			checkTask(){
-				if(this.store_name == ''){
-					this.$toast("请输入店铺名称");
-				}else{
-					let req = {
-						usertask_id:this.task_id,
-						shop_name:this.store_name
-					}
-					resource.checkTask(req).then(res => {
-						if(res.data.code == 1){
-							this.$toast(res.data.msg);
-							this.goods_price = res.data.data;
-							this.checkSuccess = true;
-						}else{
-							this.$toast(res.data.msg);
+				if(this.task_info.is_check_tkl == 1){
+					if(this.content == ''){
+						this.$toast("请输入商品链接");
+					}else{
+						let req = {
+							usertask_id:this.task_id,
+							content:this.content
 						}
-					})
+						resource.checkTkl(req).then(res => {
+							if(res.data.code == 1){
+								this.$toast(res.data.msg);
+								this.goods_price = res.data.data.tips;
+								this.$copyText(res.data.data.copy_text);
+								this.checkSuccess = true;
+							}else if(res.data.code == 2){
+								this.$toast(res.data.msg);
+								this.task_info.is_check_tkl = 0;
+								this.store_name = "";
+								this.content = "";
+							}else{
+								this.$toast(res.data.msg);
+							}
+						})
+					}
+				}else{
+					if(this.store_name == ''){
+						this.$toast("请输入店铺名称");
+					}else{
+						let req = {
+							usertask_id:this.task_id,
+							shop_name:this.store_name
+						}
+						resource.checkTask(req).then(res => {
+							if(res.data.code == 1){
+								this.$toast(res.data.msg);
+								this.goods_price = res.data.data;
+								this.checkSuccess = true;
+							}else{
+								this.$toast(res.data.msg);
+							}
+						})
+					}
 				}
 			},
 			//淘宝/拼多多/抖音提交
