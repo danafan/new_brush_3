@@ -54,7 +54,7 @@
 					<div class="title_text">提交</div>
 				</div>
 				<div class="content_box submit">
-					<div class="goods_price">拍下价格为{{goods_price}}元的商品后提交</div>
+					<div class="goods_price">{{goods_price}}</div>
 					<div class="submit_but" @click="submitTask">提交</div>
 				</div>
 			</div>
