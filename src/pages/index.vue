@@ -335,11 +335,32 @@
 			this.getUserTask();
 			//获取banner列表
 			this.bannerList();
+			//获取提示
+			this.getTips();
 		},
 		beforeDestroy(){
 			clearTimeout(this.settimeout);
 		},
 		methods:{
+			//获取提示
+			getTips(){
+				resource.getTips().then(res => {
+					if(res.data.code == 1){
+						let data = res.data.data;
+						let tip_id = sessionStorage.getItem('tip_id');
+						if(data.id && data.id != tip_id){
+							sessionStorage.setItem('tip_id',data.id);
+							MessageBox({
+								title: '公告',
+								message: data.content
+							});
+						}
+
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
 			//获取banner列表
 			bannerList(){
 				resource.bannerList().then(res => {

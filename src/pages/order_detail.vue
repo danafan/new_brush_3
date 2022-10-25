@@ -151,6 +151,9 @@
 				box-sizing: border-box;
 				padding: .1rem;
 			}
+			.goods_price{
+				flex:1;
+			}
 			input::-webkit-input-placeholder {
 				color: #666666;
 			}
