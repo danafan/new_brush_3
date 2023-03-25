@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- 淘宝 -->
-		<div class="toast_content" v-if="shop_type == '1'">
+		<!-- <div class="toast_content" v-if="shop_type == '1'">
 			<div class="toast_title">请先浏览以下注意事项，浏览完成后开始任务</div>
 			<div class="toast_item">
 				禁止点直通车（左上角有hot）进入，点直通车的扣除佣金。
@@ -21,9 +21,9 @@
 			<div class="img_content">
 				<img class="toast_img" src="http://upload.gxk8090.com/toast_img.png">
 			</div>
-		</div>
+		</div> -->
 		<!-- 拼多多 -->
-		<div class="toast_content" v-if="shop_type == '2'">
+		<!-- <div class="toast_content" v-if="shop_type == '2'">
 			<div class="toast_title">拼多多任务下单付款注意事项</div>
 			<div class="toast_item">
 				收货人手机号一定要和系统绑定的手机号完全一致；
@@ -43,16 +43,16 @@
 			<div class="img_content">
 				<img class="toast_img" src="../static/pdd_toast_icon.png">
 			</div>
-		</div>
+		</div> -->
 		<!-- 得物 -->
-		<div class="toast_content" v-if="shop_type == '3'">
+		<!-- <div class="toast_content" v-if="shop_type == '3'">
 			<div class="toast_title">得物退款任务注意事项</div>
 			<div class="toast_item">
 				此任务为得物退款任务，提交/审核成功后请申请退款。
 			</div>
-		</div>
+		</div> -->
 		<!-- 抖音 -->
-		<div class="toast_content" v-if="shop_type == '4'">
+		<!-- <div class="toast_content" v-if="shop_type == '4'">
 			<div class="toast_title">抖音任务注意事项</div>
 			<div class="toast_item">
 				收藏，加购，然后下单付款。
@@ -64,6 +64,17 @@
 			<div class="img_content">
 				<div class="sort_num">2、</div>
 				<img class="toast_img" src="http://upload.gxk8090.com/dy_toast_02.jpg">
+			</div>
+		</div> -->
+		<div class="toast_content">
+			<div class="toast_title" v-if="shop_type == '1'">请先浏览以下注意事项，浏览完成后开始任务</div>
+			<div class="toast_title" v-if="shop_type == '2'">拼多多任务下单付款注意事项</div>
+			<div class="toast_title" v-if="shop_type == '3'">得物退款任务注意事项</div>
+			<div class="toast_title" v-if="shop_type == '4'">抖音任务注意事项</div>
+			<div class="toast_item" v-html="content">
+			</div>
+			<div class="img_content">
+				<img class="toast_img" :src="item" v-for="item in imgs">
 			</div>
 		</div>
 		<div class="but_box">
@@ -128,18 +139,34 @@
 }
 </style>
 <script>
+	import resource from '../api/resource.js'
 	export default{
 		data(){
 			return{
 				task_id:"",
-				shop_type:""
+				shop_type:"",
+				content:"",
+				imgs:[]
 			}
 		},
 		created(){
 			this.task_id = this.$route.query.task_id;
 			this.shop_type = this.$route.query.shop_type;
+			//获取任务提示
+			this.getTaskTip();
 		},
 		methods:{
+			//获取任务提示
+			getTaskTip(){
+				resource.getTaskTip({shop_type:this.shop_type}).then(res => {
+					if(res.data.code == 1){
+						this.content = res.data.data.content;
+						this.imgs = res.data.data.imgs;
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
 			next(){
 				this.$router.push('/order_detail?task_id=' + this.task_id);
 			}

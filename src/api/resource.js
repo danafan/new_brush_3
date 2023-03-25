@@ -35,6 +35,7 @@ let path = {
 	submitEvaluate:'evaluate/submitevaluate',			//提交任务
 	getEvaluateNum:'user/getuserstatus',				//获取待处理买家秀任务数量
 	checkTkl:'task/taskchecktkl',						//验证淘口令
+	getTaskTip:'task/gettasktip',						//获取任务提示
 
 }
 export default{
@@ -181,6 +182,10 @@ export default{
 	//验证淘口令
 	checkTkl(params){
 		return http.post(path.checkTkl, params)
+	},
+	//获取任务提示
+	getTaskTip(params){
+		return http.get(path.getTaskTip, params)
 	},
 
 }
