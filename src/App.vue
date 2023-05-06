@@ -9,9 +9,10 @@
   export default {
     name: 'app',
     created(){
-      resource.getUserStatus().then(res => {
+      resource.getLoginStatus().then(res => {
         if(res.data.code == 1){
-          this.$router.push('/index')
+          localStorage.setItem('user_type',res.data.data.user_type);
+          this.$router.push('/index');
         }else{
           this.$toast(res.data.msg);
         }

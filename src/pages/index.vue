@@ -384,7 +384,7 @@
 				this.getUserTask();
 			},
 			//获取用户信息
-			getUserInfo(){
+			getUserInfo(is_timer){
 				resource.getUserStatus().then(res => {
 					if(res.data.code == 1){
 						this.userInfo = res.data.data;
@@ -392,12 +392,14 @@
 						if(this.userInfo.task_status == 1){
 							this.settimeout = setTimeout(() => {
 								//获取用户信息
-								this.getUserInfo();
+								this.getUserInfo(1);
 							},10000)
 						}else if(this.userInfo.task_status == 2){
 							this.tab_active = this.userInfo.shop_type;
-							//获取用户任务
-							this.getUserTask();
+							if(is_timer){
+								//获取用户任务
+								this.getUserTask();
+							}
 						}
 					}else{
 						this.$toast(res.data.msg);

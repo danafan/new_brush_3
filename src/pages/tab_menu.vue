@@ -3,7 +3,7 @@
 		<div class="title_box">
 			<div class="service" @click="$router.push('/service')">反馈问题</div>
 			<div class="title_text">{{title}}</div>
-			<div class="route_title" v-if="userInfo.user_type == 1" @click="$router.push('/disciple')">徒弟列表</div>
+			<div class="route_title" v-if="user_type == 1" @click="$router.push('/disciple')">徒弟列表</div>
 		</div>
 		<div class="announcement">
 			<div class="left">
@@ -198,6 +198,7 @@
 	export default{
 		data(){
 			return{
+				user_type:null,
 				userInfo:{},
 				announcement_list:[],
 				active_index:'/index',
@@ -209,13 +210,12 @@
 		},
 		created(){
 			this.active_index = this.$route.path == '/tab_menu'?'/index':this.$route.path;
-			//获取用户信息
-			this.getUserInfo();
 			//获取待处理的买家秀任务数量
 			this.getEvaluateNum();
 			//获取公告
 			this.getLatestNotice();
 			this.$router.push(this.active_index);
+			this.user_type = localStorage.getItem('user_type');
 		},
 		watch:{
 			active_index:function(n,o){
@@ -253,16 +253,6 @@
 			getAnnouncement(content){
 				this.showAnnouncement = true;
 				this.announcement = content;
-			},
-			//获取用户信息
-			getUserInfo(){
-				resource.getUserStatus().then(res => {
-					if(res.data.code == 1){
-						this.userInfo = res.data.data;
-					}else{
-						this.$toast(res.data.msg);
-					}
-				})
 			}
 		}
 	}

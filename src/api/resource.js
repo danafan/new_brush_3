@@ -1,5 +1,6 @@
 import http from './request.js'
 let path = {	
+	getLoginStatus:'user/getloginstatus',				//判断是否登录
 	getUserStatus:'user/getuserinfo',					//获取用户信息
 	getTips:'usernotice/gettips',						//获取提示内容
 	loginverify:'user/loginverify',						//发送验证码
@@ -39,6 +40,9 @@ let path = {
 
 }
 export default{
+	getLoginStatus(params){
+		return http.get(path.getLoginStatus, params)
+	},
 	//获取用户信息
 	getUserStatus(params){
 		return http.get(path.getUserStatus, params)
