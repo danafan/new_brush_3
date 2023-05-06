@@ -3,7 +3,7 @@ let path = {
 	getUserStatus:'user/getuserinfo',					//获取用户信息
 	getTips:'usernotice/gettips',						//获取提示内容
 	loginverify:'user/loginverify',						//发送验证码
-	login:'user/login',									//登录
+	login:'user/loginnew',									//登录
 	applyTask:'task/applytask',							//申请任务
 	cancelApply:'task/cancelapply',						//取消申请
 	noConfirmTask:'task/noconfirmtask',					//首页取消

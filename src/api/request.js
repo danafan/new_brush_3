@@ -3,8 +3,15 @@ import md5 from 'js-md5';
 
 //中间处理
 export function middleWare(params,type) { 
+  var now = new Date();         //当前日期  
+  var nowDay = now.getDate();     //当前日 
+  var nowMonth = now.getMonth();    //当前月 
+  var nowYear = now.getYear();    //当前年
+  nowYear += (nowYear < 2000) ? 1900 : 0;
+  let new_secret_key = `${nowYear}-${nowMonth+1 < 10?'0'+(nowMonth+1):nowMonth+1}-${nowDay < 10?'0'+nowDay:nowDay}`
+
   var target = {
-    secret_key:!localStorage.getItem("secret_key")?'':localStorage.getItem("secret_key"),
+    secret_key:!localStorage.getItem("secret_key")?md5(new_secret_key):localStorage.getItem("secret_key"),
     timestamp:((new Date()).getTime()/1000).toString().split('.')[0]
   };
   // 生成签名
