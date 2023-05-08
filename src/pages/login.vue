@@ -3,6 +3,8 @@
 		<div class="login_title">密码登录</div>
 		<input class="input_element" type="text" placeholder="请输入旺旺号" v-model="wangwang">
 		<input class="input_element password" type="password" placeholder="请输入密码" v-model="password">
+		<input class="input_element mt26" placeholder="请输入验证码" v-model="img_code">
+		<img class="code_img mt26" :src="codeUrl" @click="getImgCode">
 		<div class="toast_text">第一次登录为设置密码</div>
 		<div class="login_but" @click="login">登录</div>
 		<div class="dialog_box" v-if="show_dialog">
@@ -19,6 +21,19 @@
 	</div>
 </template>
 <style lang="less" scoped>
+.flex{
+	display: flex;
+}
+.ac{
+	align-items:center;
+}
+.mt26{
+	margin-top: .26rem;
+}
+.code_img{
+	height: 1.8rem;
+	// width: 50%;
+}
 .container{
 	padding-left: .44rem;
 	padding-right: .44rem;
@@ -133,13 +148,22 @@
 				but_text:"发送验证码",
 				notBut: true,                   	//默认获取验证码按钮可点击
       			time:60,                        	//默认倒数60秒
-      			sms_code:""
+      			sms_code:"",
+      			img_code:"",						//输入的验证码
+      			codeUrl:"",							//图片验证码
       		}
       	},
       	created(){
       		localStorage.clear();
+      		//获取验证码
+      		this.getImgCode();
       	},
       	methods:{
+      		//获取验证码
+      		getImgCode(){
+      			let timestamp = new Date().getTime() + Math.random();
+      			this.codeUrl = `${location.origin}/mobile/user/captcha?key=${timestamp}`;	
+      		},
 			// 登录
 			login(){
 				if(this.wangwang == ''){
@@ -149,7 +173,8 @@
 				}else{
 					let req = {
 						ww:this.wangwang,
-						pwd:this.password
+						pwd:this.password,
+						captcha:this.img_code
 					}
 					resource.login(req).then(res => {
 						if(res.data.code == 1){
