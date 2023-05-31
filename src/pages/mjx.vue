@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<div class="task_list">
-			<div class="task_item" v-for="item in task_list" @click="$router.push('/mjx_detail?order_id=' + item.order_id)">
+			<div class="task_item" v-for="item in task_list" @click="gotoDetail(item.order_id)">
 				<div class="row">
 					<div class="name">{{item.shop_name}}</div>
 					<div class="time">{{item.invitation_time}}</div>
@@ -23,6 +23,7 @@
 	</div>
 </template>
 <script>
+	import { MessageBox } from 'mint-ui';
 	import resource from '../api/resource.js'
 	export default{
 		data(){
@@ -52,6 +53,7 @@
 				status:2,
 				task_list:[],	//任务列表
 				evaluate_order_num:0,	//待处理的买家秀任务数量
+				evaluate_msg:"",
 			}
 		},
 		watch:{
@@ -85,104 +87,113 @@
 				}
 				resource.getEvaluateTask(arg).then(res => {
 					if(res.data.code == 1){
+						this.evaluate_msg = res.data.data.evaluate_msg;
 						this.task_list = res.data.data.evaluate_orders;
 					}else{
 						this.$toast(res.data.msg);
 					}
 				})
+			},
+			//点击查看任务
+			gotoDetail(order_id){
+				MessageBox({
+					message: this.evaluate_msg
+				}).then(res => {
+					this.$router.push('/mjx_detail?order_id=' + order_id)
+				});
 			}
 		}
 	}
 </script>
 <style lang="less" scoped>
-.mjx_container{
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-}
-.tab_row{
-	width: 100%;
-	height: 2.3rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-around;
-	.tab_item{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		position: relative;
-		.num_yuan{
-			position: absolute;
-			top: -0.1rem;
-			right: 0;
-			background: #F22E00;
-			border-radius: 50%;
-			width: .28rem;
-			text-align: center;
-			height: .28rem;
-			line-height: .28rem;
-			font-size: .24rem;
-			color: #ffffff;
-		}
-		.tab_img{
-			width: .7rem;
-			height: .7rem;
-		}
-		.tab_name{
-			margin-top: .24rem;
-			font-size: .28rem;
-			color: #333333;
-		}
-	}
-}
-.task_list{
-	width: 100%;
-	flex:1;
-	padding-left: .2rem;
-	padding-right: .2rem;
-	overflow-y: scroll;
-	.task_item{
-		margin-bottom: .2rem;
-		border-radius: .12rem;
-		background: #ffffff;
+	.mjx_container{
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
-		height: 1.56rem;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
+	}
+	.tab_row{
+		width: 100%;
+		height: 2.3rem;
+		display: flex;
+		align-items: center;
 		justify-content: space-around;
-		padding-left: .3rem;
-		padding-right: .3rem;
-		.row{
+		.tab_item{
 			display: flex;
+			flex-direction: column;
 			align-items: center;
-			justify-content: space-between;
-			.name{
-				font-size: .28rem;
-				color: #333333;
-			}
-			.time{
-				font-size: .24rem;
-				color:#999999;
-			}
-			.ww_code{
-				font-size: .24rem;
-				color:#333333;
-			}
-			.button{
-				border-radius:.24rem;
-				background: #00C693;
-				width: 1.4rem;
+			position: relative;
+			.num_yuan{
+				position: absolute;
+				top: -0.1rem;
+				right: 0;
+				background: #F22E00;
+				border-radius: 50%;
+				width: .28rem;
 				text-align: center;
-				height: .48rem;
-				line-height: .48rem;
+				height: .28rem;
+				line-height: .28rem;
 				font-size: .24rem;
 				color: #ffffff;
 			}
+			.tab_img{
+				width: .7rem;
+				height: .7rem;
+			}
+			.tab_name{
+				margin-top: .24rem;
+				font-size: .28rem;
+				color: #333333;
+			}
 		}
 	}
-}
+	.task_list{
+		width: 100%;
+		flex:1;
+		padding-left: .2rem;
+		padding-right: .2rem;
+		overflow-y: scroll;
+		.task_item{
+			margin-bottom: .2rem;
+			border-radius: .12rem;
+			background: #ffffff;
+			width: 100%;
+			height: 1.56rem;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			padding-left: .3rem;
+			padding-right: .3rem;
+			.row{
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				.name{
+					font-size: .28rem;
+					color: #333333;
+				}
+				.time{
+					font-size: .24rem;
+					color:#999999;
+				}
+				.ww_code{
+					font-size: .24rem;
+					color:#333333;
+				}
+				.button{
+					border-radius:.24rem;
+					background: #00C693;
+					width: 1.4rem;
+					text-align: center;
+					height: .48rem;
+					line-height: .48rem;
+					font-size: .24rem;
+					color: #ffffff;
+				}
+			}
+		}
+	}
 </style>
