@@ -152,7 +152,7 @@
       	methods:{
       		//获取用户信息
       		getUserInfo(){
-      			resource.getUserStatus().then(res => {
+      			resource.getUserInfo().then(res => {
       				if(res.data.code == 1){
       					this.userInfo = res.data.data;
       				}else{
