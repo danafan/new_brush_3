@@ -22,10 +22,14 @@
 					<div class="tag_img"></div>
 					<div class="wang_code">{{tab_active=='1'?userInfo.ww:userInfo.phone}}</div>
 				</div>
-				<div class="order_but" v-if="userInfo.task_status == 0" @click="applyTask">接单</div>
-				<div class="countdown" v-if="userInfo.task_status == 1">结束时间：{{userInfo.apply_expiration_time}}</div>
-				<div class="order_but has_order_but" v-if="userInfo.task_status == 1" @click="cancelApply">取消</div>
-				<div class="order_but hui_order_but" v-if="userInfo.task_status == 2" @click="$toast('您有未完成订单');">已接单</div>
+
+				<div class="countdown" v-if="tab_active == '1' && tb_status === 1">结束时间：{{apply_expiration_time_tb}}</div>
+				<div class="countdown" v-if="tab_active == '2' && pdd_status === 1">结束时间：{{apply_expiration_time_pdd}}</div>
+				<div class="countdown" v-if="tab_active == '4' && dy_status === 1">结束时间：{{apply_expiration_time_dy}}</div>
+
+				<div class="order_but" v-if="(tab_active == '1' && tb_status === 0) || (tab_active == '2' && pdd_status === 0) || (tab_active == '4' && dy_status === 0)" @click="applyTask">接单</div>
+				<div class="order_but has_order_but" v-if="(tab_active == '1' && tb_status === 1) || (tab_active == '2' && pdd_status === 1) || (tab_active == '4' && dy_status === 1)" @click="cancelApply">取消</div>
+				<div class="order_but hui_order_but" v-if="(tab_active == '1' && tb_status === 2) || (tab_active == '2' && pdd_status === 2) || (tab_active == '4' && dy_status === 2)" @click="$toast('您有未完成订单');">已接单</div>
 			</div>
 			<div class="order_item" v-for="item in taskList" @click="taskDetail(item.usertask_id,item.status)">
 				<img class="goods_img" :src="item.goods_img">
@@ -66,247 +70,247 @@
 	</div>
 </template>
 <style lang="less" scoped>
-.index_container{
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	overflow-y: scroll;
-	.banner{
+	.index_container{
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
-		height: 2.35rem;
-		.mint-swipe-items-wrap{
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		overflow-y: scroll;
+		.banner{
 			width: 100%;
-			height: 100%;
-			.mint-swipe-item{
+			height: 2.35rem;
+			.mint-swipe-items-wrap{
 				width: 100%;
-				height: 100%; 
-				img{
+				height: 100%;
+				.mint-swipe-item{
 					width: 100%;
-					height: 100%;
+					height: 100%; 
+					img{
+						width: 100%;
+						height: 100%;
+					}
+				}
+				.swiper-pagination{
+					height: .001rem;
+					bottom: 70px;
 				}
 			}
-			.swiper-pagination{
-				height: .001rem;
-				bottom: 70px;
-			}
 		}
-	}
-	.tab{
-		padding-top: .28rem;
-		width:100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		.tab_item{
-			height: .64rem;
-			width:30%;
+		.tab{
+			padding-top: .28rem;
+			width:100%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			font-size:.28rem;
-		}
-		.tb{
-			border:1px solid #00C693;
-			border-radius:.32rem 0 0 .32rem;
-		}
-		.pdd{
-			border:1px solid #00C693;
-		}
-		.dw{
-			border:1px solid #00C693;
-			border-radius:0 .32rem .32rem 0;
-		}
-		.active_item{
-			background:#00C693;
-			color: #fff;
-		}
-	}
-	.list_content{
-		flex:1;
-		overflow-y: scroll;
-		width: 100%;
-		padding: .28rem .2rem;
-		.wang_box{
-			background: #fff;
-			border-radius:.16rem;
-			width: 100%;
-			height: 1rem;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			.left{
-				display: flex;
-				align-items: center;
-				.tag_img{
-					margin-right: .14rem;
-					border-radius: .06rem;
-					background: #00C693;
-					width: .1rem;
-					height: .34rem;
-				}
-				.wang_code{
-					font-size: .28rem;
-					color:#333333;
-					font-weight:500;
-				}
-			}
-			.countdown{
-				font-weight:500;
-				font-size: .28rem;
-				color:#006D51;
-			}
-			.order_but{
-				border-radius:0 .16rem .16rem 0;
-				background: #00C693;
-				width: 1rem;
-				height: 1rem;
+			.tab_item{
+				height: .64rem;
+				width:30%;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: .28rem;
-				color:#FFFFFF;
+				font-size:.28rem;
 			}
-			.has_order_but{
-				background: #0C8F6D;
+			.tb{
+				border:1px solid #00C693;
+				border-radius:.32rem 0 0 .32rem;
 			}
-			.hui_order_but{
-				background: #8a8a8a;
+			.pdd{
+				border:1px solid #00C693;
+			}
+			.dw{
+				border:1px solid #00C693;
+				border-radius:0 .32rem .32rem 0;
+			}
+			.active_item{
+				background:#00C693;
+				color: #fff;
 			}
 		}
-		.order_item{
-			padding: .16rem;
-			margin-top: .2rem;
-			background: #fff;
-			border-radius:.12rem;
+		.list_content{
+			flex:1;
+			overflow-y: scroll;
 			width: 100%;
-			display: flex;
-			.goods_img{
-				margin-right: .16rem;
-				border-radius:50%;
-				height: .88rem;
-				width: .88rem;
-			}
-			.goods_content{
-				flex:1;
+			padding: .28rem .2rem;
+			.wang_box{
+				background: #fff;
+				border-radius:.16rem;
+				width: 100%;
+				height: 1rem;
 				display: flex;
-				flex-direction: column;
+				align-items: center;
 				justify-content: space-between;
-				.content_row{
-					margin-bottom: .1rem;
-					width: 100%;
+				.left{
 					display: flex;
 					align-items: center;
-					justify-content: space-between;
-					.keyword{
-						font-size: .24rem;
-						color:#333333;
-						display: -webkit-box;
-						-webkit-line-clamp: 1;
-						-webkit-box-orient: vertical;
-						text-overflow: ellipsis;
-						overflow: hidden;
-					}
-					.order_status{
-						margin-left: .2rem;
-						border-radius:.18rem;
+					.tag_img{
+						margin-right: .14rem;
+						border-radius: .06rem;
 						background: #00C693;
-						width: 1.2rem;
-						height: .36rem;
+						width: .1rem;
+						height: .34rem;
+					}
+					.wang_code{
+						font-size: .28rem;
+						color:#333333;
+						font-weight:500;
+					}
+				}
+				.countdown{
+					font-weight:500;
+					font-size: .28rem;
+					color:#006D51;
+				}
+				.order_but{
+					border-radius:0 .16rem .16rem 0;
+					background: #00C693;
+					width: 1rem;
+					height: 1rem;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: .28rem;
+					color:#FFFFFF;
+				}
+				.has_order_but{
+					background: #0C8F6D;
+				}
+				.hui_order_but{
+					background: #8a8a8a;
+				}
+			}
+			.order_item{
+				padding: .16rem;
+				margin-top: .2rem;
+				background: #fff;
+				border-radius:.12rem;
+				width: 100%;
+				display: flex;
+				.goods_img{
+					margin-right: .16rem;
+					border-radius:50%;
+					height: .88rem;
+					width: .88rem;
+				}
+				.goods_content{
+					flex:1;
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+					.content_row{
+						margin-bottom: .1rem;
+						width: 100%;
 						display: flex;
 						align-items: center;
-						justify-content: center;
-						font-size: .2rem;
-						color:#fff;
-					}
-					.create_time{
-						font-size: .24rem;
-						color:#999999;
-					}
-					.toast{
-						font-size: .24rem;
-						color:#ff5858;
+						justify-content: space-between;
+						.keyword{
+							font-size: .24rem;
+							color:#333333;
+							display: -webkit-box;
+							-webkit-line-clamp: 1;
+							-webkit-box-orient: vertical;
+							text-overflow: ellipsis;
+							overflow: hidden;
+						}
+						.order_status{
+							margin-left: .2rem;
+							border-radius:.18rem;
+							background: #00C693;
+							width: 1.2rem;
+							height: .36rem;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							font-size: .2rem;
+							color:#fff;
+						}
+						.create_time{
+							font-size: .24rem;
+							color:#999999;
+						}
+						.toast{
+							font-size: .24rem;
+							color:#ff5858;
+						}
 					}
 				}
 			}
 		}
+		.empty{
+			flex: 1;
+			display: flex;
+			flex-direction:column;
+			align-items: center;
+			justify-content: center;
+			.empty_icon{
+				margin-bottom: .56rem;
+				width:3.88rem;
+				height: 3rem;
+			}
+			.empty_text{
+				font-size:.3rem;
+				color: #666666;
+			}
+		}
+		.info_icon{
+			position: absolute;
+			right: .14rem;
+			bottom: .88rem;
+			width: 1.36rem;
+			height: 1.36rem;
+		}
 	}
-	.empty{
-		flex: 1;
+	.check_order{
+		background: rgba(0,0,0,.5);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 		display: flex;
-		flex-direction:column;
 		align-items: center;
 		justify-content: center;
-		.empty_icon{
-			margin-bottom: .56rem;
-			width:3.88rem;
-			height: 3rem;
-		}
-		.empty_text{
-			font-size:.3rem;
-			color: #666666;
-		}
-	}
-	.info_icon{
-		position: absolute;
-		right: .14rem;
-		bottom: .88rem;
-		width: 1.36rem;
-		height: 1.36rem;
-	}
-}
-.check_order{
-	background: rgba(0,0,0,.5);
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	.order_content{
-		border-radius: .12rem;
-		background: #fff;
-		width: 5.8rem;
-		height: 3.26rem;
-		.content_info{
-			padding: .26rem .24rem 0;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			.info_text{
-				font-size: .28rem;
-				color:#333333;
+		.order_content{
+			border-radius: .12rem;
+			background: #fff;
+			width: 5.8rem;
+			height: 3.26rem;
+			.content_info{
+				padding: .26rem .24rem 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				.info_text{
+					font-size: .28rem;
+					color:#333333;
+				}
+				.countdown{
+					margin-bottom: .2rem;
+					margin-top: .2rem;
+					font-weight: 600;
+					font-size: .64rem;
+					color:#00C693;
+				}
 			}
-			.countdown{
-				margin-bottom: .2rem;
-				margin-top: .2rem;
-				font-weight: 600;
-				font-size: .64rem;
-				color:#00C693;
-			}
-		}
-		.buts{
-			border-top: .02rem solid #F2F2F2;
-			height: .86rem;
-			width: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: space-around;
-			font-size: .3rem;
-			color:#333333;
-			font-weight: 600;
-			.line{
-				border-left: .02rem solid #F2F2F2;
+			.buts{
+				border-top: .02rem solid #F2F2F2;
 				height: .86rem;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				font-size: .3rem;
+				color:#333333;
+				font-weight: 600;
+				.line{
+					border-left: .02rem solid #F2F2F2;
+					height: .86rem;
+				}
 			}
 		}
 	}
-}
 </style>
 <script>
 	import { MessageBox } from 'mint-ui';
@@ -325,18 +329,26 @@
 				checkOrder:false,
 				announcement_list:[],
 				countdown:"",
-				tab_active:'1',			//
+				tab_active:'1',					//当前选中的类型
+				tb_status:0,					//淘宝接单按钮状态
+				pdd_status:0,					//拼多多接单按钮状态
+				dy_status:0,					//抖音接单按钮状态
+				apply_expiration_time_tb:"",		//淘宝结束时间
+				apply_expiration_time_pdd:"",		//拼多多结束时间
+				apply_expiration_time_dy:"",		//抖音结束时间
 			}
 		},
 		created(){
-			//获取用户信息
-			this.getUserInfo();
-			//获取用户任务
-			this.getUserTask();
-			//获取banner列表
-			this.bannerList();
 			//获取提示
 			this.getTips();
+			//获取banner列表
+			this.bannerList();
+			//获取用户信息
+			this.getUserInfo();
+			//获取用户任务状态
+			this.getUserTaskStatus();
+			//获取用户任务
+			this.getUserTask();
 		},
 		beforeDestroy(){
 			clearTimeout(this.settimeout);
@@ -385,26 +397,61 @@
 			},
 			//获取用户信息
 			getUserInfo(is_timer){
-				resource.getUserStatus().then(res => {
+				resource.getUserInfo().then(res => {
 					if(res.data.code == 1){
 						this.userInfo = res.data.data;
 						this.copy_value = this.userInfo.copy_text.value;
-						if(this.userInfo.task_status == 1){
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
+			//获取用户任务状态
+			getUserTaskStatus(){
+				resource.getUserTaskStatus().then(res => {
+					if(res.data.code == 1){
+						let data = [];
+						for(let k in res.data.data){
+							let obj = {
+								type:k,
+								value:res.data.data[k]
+							}
+							data.push(obj)
+						}
+						//接单状态
+						this.tb_status = data[0].value.task_status;
+						this.pdd_status = data[1].value.task_status;
+						this.dy_status = data[3].value.task_status;
+						//接单中结束时间
+						this.apply_expiration_time_tb = data[0].value.apply_expiration_time;
+						this.apply_expiration_time_pdd = data[1].value.apply_expiration_time;
+						this.apply_expiration_time_dy = data[3].value.apply_expiration_time;
+						if(this.findIndex(data,2) > -1){		//有已接单
+							this.tab_active = data[this.findIndex(data,2)].type;
+							//获取用户任务
+							this.getUserTask();
+						}else if(this.findIndex(data,1) > -1){	//有排队中
+							this.apply_expiration_time = data[this.findIndex(data,1)].value.apply_expiration_time;
+							if(this.settimeout){
+								clearInterval(this.settimeout);
+								this.settimeout = null;
+							}
 							this.settimeout = setTimeout(() => {
 								//获取用户信息
-								this.getUserInfo(1);
+								this.getUserTaskStatus(1);
 							},10000)
-						}else if(this.userInfo.task_status == 2){
-							this.tab_active = this.userInfo.shop_type;
-							if(is_timer){
-								//获取用户任务
-								this.getUserTask();
-							}
 						}
 					}else{
 						this.$toast(res.data.msg);
 					}
 				})
+			},
+			//获取符合条件的第一个元素下标
+			findIndex(list,e){
+				let index = list.findIndex(item => {
+					return item.value.task_status == e;
+				})
+				return index;
 			},
 			//获取用户任务
 			getUserTask(){
@@ -438,8 +485,6 @@
         			let ts = endTime - startTime;//计算剩余的毫秒数
         			if(ts <= 0){
         				this.countdown = "00：00";
-        				//获取用户任务
-        				this.getUserTask();
         			}else{
         				var mm = parseInt(ts  / 60 % 60, 10);//计算剩余的分钟数
         				var ss = parseInt(ts  % 60, 10);//计算剩余的秒数
@@ -449,20 +494,20 @@
         			}
         		},1000);
 			},
-			//首页取消
+			//弹窗取消
 			noConfirmTask(){
 				resource.noConfirmTask({shop_type:this.tab_active}).then(res => {
 					if(res.data.code == 1){
 						clearInterval(this.setinterval);
 						this.checkOrder = false;
-						//获取用户信息
-						this.getUserInfo();
+						//获取用户任务状态
+						this.getUserTaskStatus();
         				//获取用户任务
-        				this.getUserTask();
-        			}else{
-        				this.$toast(res.data.msg);
-        			}
-        		})
+						this.getUserTask();
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
 			},
 			//首页确定
 			confirmTask(){
@@ -470,36 +515,36 @@
 					if(res.data.code == 1){
 						clearInterval(this.setinterval);
 						this.checkOrder = false;
-						//获取用户信息
-						this.getUserInfo();
+						//获取用户任务状态
+						this.getUserTaskStatus();
         				//获取用户任务
-        				this.getUserTask();
-        			}else{
-        				this.$toast(res.data.msg);
-        			}
-        		})
+						this.getUserTask();
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
 			},
 			//申请任务
 			applyTask(){
 				this.$copyText( this.copy_value );
 				resource.applyTask({shop_type:this.tab_active}).then(res => {
 					if(res.data.code == 1){
-						//获取用户信息
-						this.getUserInfo();
+						//获取用户任务状态
+						this.getUserTaskStatus();
 					}else{
 						this.$toast(res.data.msg);
 					}
 				})
 			},
-			//取消申请
+			//接单取消
 			cancelApply(){
 				MessageBox.confirm('确定取消?').then(action => {
 					if(action == 'confirm'){
-						resource.cancelApply().then(res => {
+						resource.cancelApply({shop_type:this.tab_active}).then(res => {
 							if(res.data.code == 1){
 								this.$toast(res.data.msg);
-								//获取用户信息
-								this.getUserInfo();
+								//获取用户任务状态
+								this.getUserTaskStatus();
 							}else{
 								this.$toast(res.data.msg);
 							}

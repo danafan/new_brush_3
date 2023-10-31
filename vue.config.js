@@ -3,7 +3,8 @@ module.exports = {
 	devServer: {
 		proxy: {
 			'/mobile': {
-				target:'http://jd.loveismakeup.com/',
+				// target:'http://jd.loveismakeup.com/',
+        target:'http://jd.alinxn.com/',
 				ws: true,
 				changOlrigin: true,		//是否跨域
 			}

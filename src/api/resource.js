@@ -2,6 +2,7 @@ import http from './request.js'
 let path = {	
 	getLoginStatus:'user/getloginstatus',				//判断是否登录
 	getUserStatus:'user/getuserinfo',					//获取用户信息
+	getUserInfo:'user/userinfo',						//获取用户信息
 	getTips:'usernotice/gettips',						//获取提示内容
 	loginverify:'user/loginverify',						//发送验证码
 	login:'user/loginnew',									//登录
@@ -37,6 +38,7 @@ let path = {
 	getEvaluateNum:'user/getuserstatus',				//获取待处理买家秀任务数量
 	checkTkl:'task/taskchecktkl',						//验证淘口令
 	getTaskTip:'task/gettasktip',						//获取任务提示
+	getUserTaskStatus:'task/getusertaskstatus',			//获取任务状态
 
 }
 export default{
@@ -46,6 +48,10 @@ export default{
 	//获取用户信息
 	getUserStatus(params){
 		return http.get(path.getUserStatus, params)
+	},
+	//获取用户信息
+	getUserInfo(params){
+		return http.get(path.getUserInfo, params)
 	},
 	//获取提示内容
 	getTips(params){
@@ -190,6 +196,10 @@ export default{
 	//获取任务提示
 	getTaskTip(params){
 		return http.get(path.getTaskTip, params)
+	},
+	//获取任务状态
+	getUserTaskStatus(params){
+		return http.get(path.getUserTaskStatus, params)
 	},
 
 }
